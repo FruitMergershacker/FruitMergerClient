@@ -45,7 +45,7 @@ local function AutoFish()
 	castRod = true
 	local function activateFishingRod()
     	for _, tool in ipairs(character:GetChildren()) do
-        	if tool:IsA("Tool") and tool.Name == "Fishing Rod" then
+        	if tool:IsA("Tool") and (tool.Name == "Fishing Rod" or tool.Name == "Diamond Rod") then
            		tool:Activate()
             	return true
        		end
@@ -78,3 +78,4 @@ local function AutoFish()
 end
 
 AutoFish()
+
