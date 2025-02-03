@@ -59,7 +59,22 @@ local function AutoFish()
 	coroutine.wrap(function()
 		while autoFish do
 			tweenToPosition(fishFrame, 0.5)
+			if castRod then
+				if activateFishingRod() then
+					castRod = false
+				end
+			else
+				if game.Players.LocalPlayer.PlayerGui.FishingGame.Enabled then
+					inFishGame = true
+					game.Players.LocalPlayer.PlayerGui.FishingGame.FishArea.Fish.Position = game.Players.LocalPlayer.PlayerGui.FishingGame.FishArea.Hook.Position
+				else
+					inFishGame = false
+					castRod = true	
+				end
+			end
 			wait()
 		end
 	end)()
 end
+
+AutoFish()
