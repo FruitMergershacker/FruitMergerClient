@@ -249,4 +249,4 @@ CreateToggleButton("Speed Boost", function()
     speedBoost = not speedBoost
     humanoid.WalkSpeed = speedBoost and speedAmount or 16 -- Set speed based on toggle
 end)
-CreateInputField("Walk Speed")
+CreateInputField("Walk Speed", speedBoost)
