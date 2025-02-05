@@ -117,17 +117,19 @@ local function BuyTreeCrates()
 		buy.MouseButton1Click:Connect(function()
 			wait(5)
 			local crate = game.Workspace:FindFirstChild("TreeCrate")
-			tweenToPosition(CFrame.new(crate.Center.CFrame.Position), 0.5)
-			local function prompt()
-				activateProximityPrompt(crate.Center.ProximityPrompt)
-				if crate then
-					wait()
-					prompt()
-				else
-					tweenToPosition(treeFrame, 0.5)
+			if crate then
+				tweenToPosition(CFrame.new(crate.Center.CFrame.Position), 0.5)
+				local function prompt()
+					activateProximityPrompt(crate.Center.ProximityPrompt)
+					if crate then
+						wait()
+						prompt()
+					else
+						tweenToPosition(treeFrame, 0.5)
+					end
 				end
+				prompt()
 			end
-			prompt()
 		end)
 	end
 end
