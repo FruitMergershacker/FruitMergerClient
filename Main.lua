@@ -121,8 +121,8 @@ local function BuyTreeCrates()
 			local function prompt()
 				activateProximityPrompt(crate.Center.ProximityPrompt)
 				if crate then
-					prompt()
 					wait()
+					prompt()
 				else
 					tweenToPosition(treeFrame, 0.5)
 				end
