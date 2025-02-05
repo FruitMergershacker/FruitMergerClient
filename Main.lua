@@ -7,13 +7,19 @@ local tweenService = game:GetService("TweenService")
 local autoFish = false
 local inFishGame = false
 local castRod = false
-local sellAmount = 10
+
 local fishedAmount = 0
 
+local sets = {
+	speedAmount = 16,
+	sellAmount = 10,
+	treeCrateAmount = 1
+}
+
 local speedBoost = false
-local speedAmount = 16
 
 local fishFrame = CFrame.new(-90.864769, 29.9999981, -150.895401, -0.769102752, -7.8977429e-08, 0.639125109, -9.43034095e-08, 1, 1.00894377e-08, -0.639125109, -5.25118615e-08, -0.769102752)
+local treeFrame = CFrame.new(-30.8521118, 7.99999905, -195.127869, 0.00704389857, -6.7769129e-08, 0.999975204, 6.53891474e-09, 1, 6.77247485e-08, -0.999975204, 6.06170625e-09, 0.00704389857)
 
 local function tweenToPosition(cframe, duration)
     if hrp then
@@ -22,16 +28,6 @@ local function tweenToPosition(cframe, duration)
         local tween = tweenService:Create(hrp, tweenInfo, goal)
         tween:Play()
     end
-end
-
-local function activateFishingRod()
-    for _, tool in ipairs(character:GetChildren()) do
-        if tool:IsA("Tool") and (tool.Name == "Fishing Rod" or tool.Name == "Diamond Rod") then
-            tool:Activate()
-            return true
-        end
-    end
-    return false
 end
 
 local function activateProximityPrompt(prompt)
@@ -44,29 +40,39 @@ local function activateProximityPrompt(prompt)
     end
 end
 
-local function equipAllTools()
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        for _, tool in ipairs(backpack:GetChildren()) do
-            if tool:IsA("Tool") then
-                humanoid:EquipTool(tool)
-				local fishermanPrompt = game.Workspace:WaitForChild("Fisherman"):WaitForChild("HumanoidRootPart"):WaitForChild("ProximityPrompt")
-    			activateProximityPrompt(fishermanPrompt)
-				wait()
-            end
-        end
-    end
-end
-
-local function Sell()
-    equipAllTools()
-    local fishermanPrompt = game.Workspace:WaitForChild("Fisherman"):WaitForChild("HumanoidRootPart"):WaitForChild("ProximityPrompt")
-    activateProximityPrompt(fishermanPrompt)
-    wait() -- Wait for the selling process to complete
-    fishedAmount = 0 -- Reset the fished amount
-end
-
 local function AutoFish()
+	local function activateFishingRod()
+   		for _, tool in ipairs(character:GetChildren()) do
+        	if tool:IsA("Tool") and (tool.Name == "Fishing Rod" or tool.Name == "Diamond Rod" or tool.Name =="Steel Rod" or tool.Name == "Angler Rod" or tool.Name == "Golden Rod") then
+        	    tool:Activate()
+        	    return true
+        	end
+    	end
+    	return false
+	end
+
+	local function equipAllTools()
+    	local backpack = player:FindFirstChild("Backpack")
+    	if backpack then
+    	    for _, tool in ipairs(backpack:GetChildren()) do
+    	        if tool:IsA("Tool") then
+    	            humanoid:EquipTool(tool)
+					local fishermanPrompt = game.Workspace:WaitForChild("Fisherman"):WaitForChild("HumanoidRootPart"):WaitForChild("ProximityPrompt")
+    				activateProximityPrompt(fishermanPrompt)
+					wait()
+    	        end
+    	    end
+    	end
+	end
+
+	local function Sell()
+    	equipAllTools()
+    	local fishermanPrompt = game.Workspace:WaitForChild("Fisherman"):WaitForChild("HumanoidRootPart"):WaitForChild("ProximityPrompt")
+    	activateProximityPrompt(fishermanPrompt)
+    	wait() -- Wait for the selling process to complete
+    	fishedAmount = 0 -- Reset the fished amount
+	end
+
     if not autoFish then
         autoFish = true
         castRod = true
@@ -75,7 +81,7 @@ local function AutoFish()
             while autoFish do
                 tweenToPosition(fishFrame, 0.5)
                 if castRod then
-                    equipAllTools() -- Equip the fishing rod before fishing
+                    equipAllTools()
                     if activateFishingRod() then
                         castRod = false
                     end
@@ -86,7 +92,7 @@ local function AutoFish()
                     else
                         if inFishGame then
                             fishedAmount += 1
-                            if fishedAmount <= sellAmount then
+                            if fishedAmount >= sets.sellAmount then
                                 Sell()
                             end
                             inFishGame = false
@@ -100,6 +106,28 @@ local function AutoFish()
     else
         autoFish = false
     end
+end
+
+local function BuyTreeCrates()
+	local buy = game.Players.LocalPlayer.PlayerGui.ZoneUis.TreeShop.BuyCrate.Button
+
+	for i = 0, sets.treeCrateAmount, 1 do
+		tweenToPosition(treeFrame, 0.5)
+
+		buy.MouseButton1Click:Connect(function()
+			local crate = workspace:FindFirstChild("TreeCrate")
+			tweenToPosition(crate.Box.CFrame, 0.5)
+			local function prompt()
+				activateProximityPrompt(crate.Center.ProximityPrompt)
+				if crate then
+					prompt()
+				else
+					tweenToPosition(treeFrame, 0.5)
+				end
+			end
+			prompt()
+		end)
+	end
 end
 
 -- GUI
@@ -227,22 +255,48 @@ local function CreateInputField(name, value)
         if enterPressed then
             local inputValue = tonumber(InputBox.Text)
             if inputValue then
-                value = inputValue
+                sets[value] = inputValue
             end
         end
     end)
 end
 
--- Create the Equip All Tools button
-CreateToggleButton("Equip All Tools", equipAllTools)
-
 -- Create Categories and their elements in order
 CreateCategory("Auto Fishing")
 CreateToggleButton("Auto Fish", AutoFish)
-CreateInputField("Sell at")
+CreateInputField("Sell at", "sellAmount")
+
+CreateCategory("Auto tree crate")
+CreateToggleButton("Buy crates", BuyTreeCrates)
+CreateInputField("Buy:", "treeCrateAmount")
+
 CreateCategory("Utilities")
 CreateToggleButton("Speed Boost", function()
     speedBoost = not speedBoost
-    humanoid.WalkSpeed = speedBoost and speedAmount or 16 -- Set speed based on toggle
+    humanoid.WalkSpeed = speedBoost and sets.speedAmount or 16 -- Set speed based on toggle
 end)
-CreateInputField("Walk Speed", speedAmount)
+CreateInputField("Walk Speed", "speedAmount")
+
+CreateCategory("Esentials")
+
+local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(0.9, 0, 0, 30)
+	Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    Button.Text = "Close"
+    Button.TextScaled = true
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.Parent = ScrollingFrame
+    Button.LayoutOrder = layoutOrderCounter
+    layoutOrderCounter = layoutOrderCounter + 1
+
+    local enabled = false
+    Button.MouseButton1Click:Connect(function()
+        enabled = not enabled
+        if enabled then
+            autoFish = false
+			MainFrame.Parent = nil
+		end
+    end)
+
+
