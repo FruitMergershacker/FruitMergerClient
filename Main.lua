@@ -115,7 +115,7 @@ local function BuyTreeCrates()
 		tweenToPosition(treeFrame, 0.5)
 
 		buy.MouseButton1Click:Connect(function()
-			wait(5)
+			wait(2)
 			local crate = game.Workspace:FindFirstChild("TreeCrate")
 			if crate then
 				tweenToPosition(CFrame.new(crate.Center.CFrame.Position), 0.5)
