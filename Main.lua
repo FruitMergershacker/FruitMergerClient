@@ -199,7 +199,7 @@ local function CreateToggleButton(name, func)
 end
 
 -- Create Input Field
-local function CreateInputField(name)
+local function CreateInputField(name, value)
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(0.9, 0, 0, 25) 
 	Label.Text = name
@@ -227,11 +227,7 @@ local function CreateInputField(name)
         if enterPressed then
             local inputValue = tonumber(InputBox.Text)
             if inputValue then
-                if name == "Sell at" then
-                    sellAmount = inputValue
-                elseif name == "Walk Speed" then
-                    speedAmount = inputValue
-                end
+                value = inputValue
             end
         end
     end)
@@ -249,4 +245,4 @@ CreateToggleButton("Speed Boost", function()
     speedBoost = not speedBoost
     humanoid.WalkSpeed = speedBoost and speedAmount or 16 -- Set speed based on toggle
 end)
-CreateInputField("Walk Speed", speedBoost)
+CreateInputField("Walk Speed", speedAmount)
