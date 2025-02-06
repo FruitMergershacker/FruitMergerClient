@@ -80,6 +80,7 @@ local function AutoFish()
         coroutine.wrap(function()
             while autoFish do
                 tweenToPosition(fishFrame, 0.5)
+		character.HumanoidRootPart.Anchored = true
                 if castRod then
                     equipAllTools()
                     if activateFishingRod() then
@@ -104,6 +105,7 @@ local function AutoFish()
             end
         end)()
     else
+	character.HumanoidRootPart.Anchored = false
         autoFish = false
     end
 end
