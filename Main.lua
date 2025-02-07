@@ -99,7 +99,9 @@ local function AutoFish()
                             inFishGame = false
                             castRod = true    
                         end
-			castRod = true				
+			if not activateFishingRod then
+				castRod = true	
+			end			
                     end
                 end
                 wait()
