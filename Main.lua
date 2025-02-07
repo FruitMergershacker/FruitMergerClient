@@ -99,6 +99,7 @@ local function AutoFish()
                             inFishGame = false
                             castRod = true    
                         end
+			castRod = true				
                     end
                 end
                 wait()
